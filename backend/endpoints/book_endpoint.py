@@ -7,10 +7,12 @@ from bson.objectid import ObjectId
 # from flask_pymongo import PyMongo
 # from pymongo import MongoClient
 from common.db import *
-ns = Namespace('Book', description='API for Book management')
+
+db = mongo['abc_books']
+ns = Namespace('Book', description='APIs for Book management')
 
 book = ns.model('Book', {
-    '_id': fields.String(required=False, description='The unique id of the book that will be converted into an ObjectId'),
+    '_id': fields.String(required=False, description='The unique id of the book (auto-generated)'),
     'title': fields.String(required=True, description="The title of the book"),
     'description': fields.String(required=False, description='The description of the book'),
     'genre': fields.String(required=False, description='The genre of the book'),
@@ -20,16 +22,15 @@ book = ns.model('Book', {
     'last_borrower': fields.String(required=False, description='The last borrower of the book')
 })
 
-db = mongo['abc_books']
 
 class BookDAO(object):
     def __init__(self):
-        self.counter = 0
         self.books = db['books']
 
     def get(self, title):
         book = self.books.find_one({"title": title})
-        return book
+        print(book)
+        return jsonify(book)
         ns.abort(404, "Book {} doesn't exist".format(id))
         
     def get_all_same_title(self, title):
@@ -45,12 +46,14 @@ class BookDAO(object):
         self.books.insert_one(book)
 
     def update(self, title, data):
-        result = self.books.update_one({'title': title}, data, True)
+        book = data
+        book.pop('_id', None)
+        result = self.books.update_one({'title': title}, {'$set': data}, True)
         return result.raw_result
         
     def delete(self, title):
         book = self.books.delete_one({'title': title })
-        return book.raw_result
+        #return book.raw_result
     
 
 DAO = BookDAO()
@@ -58,7 +61,7 @@ DAO = BookDAO()
 @ns.route('/book') # input parameter
 class BooksList(Resource):
     """GET all books, and POST a new book"""
-    @ns.doc('get_all_modules')
+    @ns.doc('get_all_books')
     #@ns.marshal_list_with(book)
     def get(self):  # input parameter
         """Get all books"""
@@ -84,8 +87,6 @@ class Books(Resource):
         """Fetch a book by its title"""
         return DAO.get(title)
     
-    
-    
     @ns.doc('delete_a_book')
     def delete(self, title):
         """Delete a given book by its title"""
@@ -93,16 +94,16 @@ class Books(Resource):
         return "", 204
 
     @ns.doc('update_a_book')
-    @ns.expect(book)
+    @ns.expect(book, validate=False)
     #@ns.marshal_with(book)
     def put(self, title):
         """Update a given book by its title"""
         return DAO.update(title, ns.payload)
     
-@ns.route('/many_books/<title>') # input parameter
+@ns.route('/get_books_of_same_title/<title>') # input parameter
 @ns.param('title', 'The title of the book (str)')
 @ns.response(404, 'Book not found')
-class AllBooks(Resource):
+class ManyBooks(Resource):
     @ns.doc('get_all_book_of_the_same_title')
     #@ns.marshal_list_with(book)
     def get(self, title): # input parameter
