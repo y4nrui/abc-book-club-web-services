@@ -2,13 +2,14 @@ from wsgiref import validate
 from flask_restx import Namespace, Resource, fields
 from flask import request, jsonify
 from bson.objectid import ObjectId
-import datetime
+from datetime import datetime
 # from .db import get_db
 # from flask import current_app, g
 # from werkzeug.local import LocalProxy
 # from flask_pymongo import PyMongo
 # from pymongo import MongoClient
 from common.db import *
+import re
 
 db = mongo['abc_books']
 ns = Namespace('User', description='APIs for User management')
@@ -28,12 +29,12 @@ class UserDAO(object):
         self.users = db['users']
         
     def get(self, email):
-        user = self.users.find_one({"email": email})
+        user = self.users.find_one({"email": re.compile(email, re.IGNORECASE)})
         return jsonify(user)
         ns.abort(404, "User {} doesn't exist".format(id))
         
     def get_all_same_role(self, role):
-        user = self.users.find({"role": role})
+        user = self.users.find({"role": re.compile(role, re.IGNORECASE)})
         result = list(user)
         res = {'result': result, 'response': "200"}
         return jsonify(res)
@@ -42,7 +43,7 @@ class UserDAO(object):
     def create(self, data):
         user = data
         user.pop('_id', None)
-        current_datetime = datetime.datetime.now().isoformat()
+        current_datetime = datetime.now().isoformat()
         user['date_joined'] = current_datetime # current local datetime in iso format
         self.users.insert_one(user)
 

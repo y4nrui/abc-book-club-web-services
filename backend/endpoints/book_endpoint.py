@@ -7,6 +7,7 @@ from bson.objectid import ObjectId
 # from flask_pymongo import PyMongo
 # from pymongo import MongoClient
 from common.db import *
+import re
 
 db = mongo['abc_books']
 ns = Namespace('Book', description='APIs for Book management')
@@ -19,7 +20,7 @@ book = ns.model('Book', {
     'author': fields.String(required=False, description='The author of the book'),
     'year_published': fields.Integer(required=False, description='The year the book is published'),
     'borrowing_availability_status': fields.Boolean(required=False, description='The borrowing availability status of the book'),
-    'last_borrower': fields.String(required=False, description='The last borrower of the book')
+    'last_borrower': fields.String(required=False, description="The last borrower of the book, represented by the borrower's email")
 })
 
 
@@ -28,13 +29,13 @@ class BookDAO(object):
         self.books = db['books']
 
     def get(self, title):
-        book = self.books.find_one({"title": title})
-        print(book)
+        book = self.books.find_one({"title": re.compile(title, re.IGNORECASE)})
+        #print(book)
         return jsonify(book)
         ns.abort(404, "Book {} doesn't exist".format(id))
         
     def get_all_same_title(self, title):
-        book = self.books.find({"title": title})
+        book = self.books.find({"title": re.compile(title, re.IGNORECASE)})
         result = list(book)
         res = {'result': result, 'response': "200"}
         return jsonify(res)
@@ -55,7 +56,6 @@ class BookDAO(object):
         book = self.books.delete_one({'title': title })
         #return book.raw_result
     
-
 DAO = BookDAO()
 
 @ns.route('/book') # input parameter
@@ -110,6 +110,27 @@ class ManyBooks(Resource):
         """Fetch all books that have the same title"""
         return DAO.get_all_same_title(title)
 
+@ns.route('/get_book_by_id/<id>') # input parameter
+@ns.param('id', 'The id of the book')
+class GetBookByID(Resource):
+    @ns.doc('get_book_by_id')
+    #@ns.marshal_list_with(book)
+    def get(self, id): # input parameter
+        """Fetch a book with the id"""
+        #book = DAO.books.find_one({'_id': ObjectId(id)})
+        book = DAO.books.find_one(ObjectId(id))
+        #print(book['borrowing_availability_status'])
+        return jsonify(book)
+    
+    @ns.doc('update_book_genre_by_id')
+    @ns.expect(book, validate=False)
+    #@ns.marshal_list_with(book)
+    def put(self, id): # input parameter
+        """Update genre of book with the id"""
+        #book = DAO.books.find_one({'_id': ObjectId(id)})
+        result = DAO.books.update_one({'_id': ObjectId(id)}, {'$set': {'genre': ns.payload['genre']}}, True)
+        #print(result.raw_result)
+        return result.raw_result
 
 
 
