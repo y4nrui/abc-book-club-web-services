@@ -69,9 +69,18 @@ class BooksList(Resource):
         res = {'result': result, 'response': "200"}
         return jsonify(res)
 
+    # @ns.doc('create_a_book')
+    # @ns.expect(book)
+    # #@ns.marshal_with(book, code=201)
+    # def post(self):
+    #     """Create a new book"""
+    #     return DAO.create(ns.payload), 201
+
+@ns.route('/create_new_book') # input parameter
+class CreateBook(Resource):
+    """Create a new book"""
     @ns.doc('create_a_book')
     @ns.expect(book)
-    #@ns.marshal_with(book, code=201)
     def post(self):
         """Create a new book"""
         return DAO.create(ns.payload), 201
@@ -80,13 +89,32 @@ class BooksList(Resource):
 @ns.param('title', 'The title of the book (str)')
 @ns.response(404, 'Book not found')
 class Books(Resource):
-    """Fetch a single book, update a book, or delete a book"""
+    # """Fetch a single book, update a book, or delete a book"""
+    """Fetch a single book"""
     @ns.doc('get_a_book')
     #@ns.marshal_list_with(book)
     def get(self, title): # input parameter
         """Fetch a book by its title"""
         return DAO.get(title)
     
+    # @ns.doc('delete_a_book')
+    # def delete(self, title):
+    #     """Delete a given book by its title"""
+    #     DAO.delete(title)
+    #     return "", 204
+
+    # @ns.doc('update_a_book')
+    # @ns.expect(book, validate=False)
+    # #@ns.marshal_with(book)
+    # def put(self, title):
+    #     """Update a given book by its title"""
+    #     return DAO.update(title, ns.payload)
+
+@ns.route('/modify_book/<title>') # input parameter
+@ns.param('title', 'The title of the book (str)')
+@ns.response(404, 'Book not found')
+class ModifyBook(Resource):
+    """Update a book, or delete a book"""
     @ns.doc('delete_a_book')
     def delete(self, title):
         """Delete a given book by its title"""
@@ -99,6 +127,8 @@ class Books(Resource):
     def put(self, title):
         """Update a given book by its title"""
         return DAO.update(title, ns.payload)
+    
+    
     
 @ns.route('/get_books_of_same_title/<title>') # input parameter
 @ns.param('title', 'The title of the book (str)')
