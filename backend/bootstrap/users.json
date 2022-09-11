@@ -1,0 +1,68 @@
+[{
+  "_id": {
+    "$oid": "631d1463f4d891799729ca0c"
+  },
+  "email": "jayden_sia@gmail.com",
+  "name": "Jayden Sia",
+  "role": "Admin",
+  "date_joined": "2022-09-11T06:49:07.892432",
+  "books_on_borrow": []
+},{
+  "_id": {
+    "$oid": "631d14b6f4d891799729ca0d"
+  },
+  "email": "john_tan@gmail.com",
+  "name": "John Tan",
+  "role": "Admin",
+  "date_joined": "2022-09-11T06:50:30.866827",
+  "books_on_borrow": []
+},{
+  "_id": {
+    "$oid": "631d151cf4d891799729ca0e"
+  },
+  "email": "edward_lim@gmail.com",
+  "name": "Edward Lim",
+  "role": "Member",
+  "date_joined": "2022-09-11T06:52:12.706850",
+  "books_on_borrow": [
+    "631d10d1c958014e790bb928"
+  ]
+},{
+  "_id": {
+    "$oid": "631d1570f4d891799729ca0f"
+  },
+  "email": "jane_kan@gmail.com",
+  "name": "Jane Kan",
+  "role": "Editor",
+  "date_joined": "2022-09-11T06:53:36.017457",
+  "books_on_borrow": []
+},{
+  "_id": {
+    "$oid": "631d1584f4d891799729ca10"
+  },
+  "email": "grace_teo@gmail.com",
+  "name": "Grace Teo",
+  "role": "Editor",
+  "date_joined": "2022-09-11T06:53:56.515845",
+  "books_on_borrow": []
+},{
+  "_id": {
+    "$oid": "631d1591f4d891799729ca11"
+  },
+  "email": "brian_yak@gmail.com",
+  "name": "Brian Yak",
+  "role": "Member",
+  "date_joined": "2022-09-11T06:54:09.544839",
+  "books_on_borrow": []
+},{
+  "_id": {
+    "$oid": "631d15bbf4d891799729ca12"
+  },
+  "email": "ignatius_koh@gmail.com",
+  "name": "Ignatius Koh",
+  "role": "Member",
+  "date_joined": "2022-09-11T06:54:51.493630",
+  "books_on_borrow": [
+    "631d121ac958014e790bb92c"
+  ]
+}]

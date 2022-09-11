@@ -1,0 +1,86 @@
+[
+  {
+    "_id": {
+      "$oid": "631d1055c958014e790bb926"
+    },
+    "title": "Pride and Prejudice",
+    "description": "This book is a satire on the rigid and shallow class structures and an expose on the marriage market of Georgian England.",
+    "genre": "Romance",
+    "author": "Jane Austen",
+    "year_published": 1813,
+    "borrowing_availability_status": true,
+    "last_borrower": "jayden_sia@gmail.com"
+  },
+  {
+    "_id": {
+      "$oid": "631d108dc958014e790bb927"
+    },
+    "title": "Never Let Me Go",
+    "description": "This science-fiction (sci-fi) novel written by the Nobel Prize winner Kazuo Ishiguro is about the intricacies of love, friendship, freedom, youth, loss, and acceptance.",
+    "genre": "Sci-Fi",
+    "author": "Kazuo Ishiguro",
+    "year_published": 2010,
+    "borrowing_availability_status": true,
+    "last_borrower": "john_tan@gmail.com"
+  },
+  {
+    "_id": {
+      "$oid": "631d10d1c958014e790bb928"
+    },
+    "title": "Beloved",
+    "description": "Toni Morrison’s ‘Beloved’ is important to read for many reasons. One of them is the fact that it was written by a woman of color, who won the Pulitzer for this very book. This much-loved classic is a critique of the slave trade in America.",
+    "genre": "Novel",
+    "author": "Toni Morrison",
+    "year_published": 1987,
+    "borrowing_availability_status": false,
+    "last_borrower": "edward_lim@gmail.com"
+  },
+  {
+    "_id": {
+      "$oid": "631d1125c958014e790bb929"
+    },
+    "title": "Things Fall Apart",
+    "description": "Chinua Achebe’s ‘Things Fall Apart’ is an illuminating glimpse into African culture and literature. The novel deals with the shifting power dynamics in a colonized Africa. The protagonist, Okonkwo, finds it difficult to accept the laws and norms imposed on his community.",
+    "genre": "Novel",
+    "author": "Chinua Achebe",
+    "year_published": 1958,
+    "borrowing_availability_status": true,
+    "last_borrower": "jane_kan@gmail.com"
+  },
+  {
+    "_id": {
+      "$oid": "631d1167c958014e790bb92a"
+    },
+    "title": "Frankenstein",
+    "description": "Mary Shelly’s ‘Frankenstein’ is an incredibly important contribution to the literary world. It can easily qualify as the first sci-fi book to ever be written. The plot revolves around an obsessed scientist, Frankenstein, and the monster he creates.",
+    "genre": "Fiction",
+    "author": "Mary Shelley",
+    "year_published": 1818,
+    "borrowing_availability_status": true,
+    "last_borrower": "grace_teo@gmail.com"
+  },
+  {
+    "_id": {
+      "$oid": "631d11bbc958014e790bb92b"
+    },
+    "title": "The God of Small Things",
+    "description": "Readers have described it as a hauntingly beautiful tale of caste taboos and what breaking them means in rigid and orthodox societies.",
+    "genre": "Psychological Fiction",
+    "author": "Arundhati Roy",
+    "year_published": 1997,
+    "borrowing_availability_status": true,
+    "last_borrower": "brian_yak@gmail.com"
+  },
+  {
+    "_id": {
+      "$oid": "631d121ac958014e790bb92c"
+    },
+    "title": "To Kill a Mocking Bird",
+    "description": "It depicts the oppressive power structure in America through the eyes of its young and innocent protagonist, Scout.",
+    "genre": "Thriller",
+    "author": "Harper Lee",
+    "year_published": 1960,
+    "borrowing_availability_status": false,
+    "last_borrower": "ignatius_koh@gmail.com"
+  }
+]
