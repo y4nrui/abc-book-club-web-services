@@ -21,6 +21,12 @@ $ pip install -r requirements.txt
         ├── app.py              # The main python program to run the entire backend
     └── README.md
 
+## MongoDB Bootstrap
+Import `books.json` and `users.json` from `backend/boostrap` into MongoDB. The View named `abc_books`, with 2 Collections within that are named `books` and `users`. The .json files should be imported into their respective Collections.
+```
+mongodb_uri = "mongodb://localhost:27017/abc_books"
+```
+
 ## Run Flask Application
 
 ```
