@@ -7,6 +7,7 @@ from bson.objectid import ObjectId
 # from flask_pymongo import PyMongo
 # from pymongo import MongoClient
 from common.db import *
+from endpoints.user_endpoint import UserDAO
 import re
 
 db = mongo['abc_books']
@@ -27,6 +28,11 @@ book = ns.model('Book', {
 class BookDAO(object):
     def __init__(self):
         self.books = db['books']
+        
+    def bearer_header_parser(self):
+        parser = ns.parser()
+        parser.add_argument(name='Authorization', location='headers', type=str)
+        return parser
 
     def get(self, title):
         book = self.books.find_one({"title": re.compile(title, re.IGNORECASE)})
@@ -57,6 +63,7 @@ class BookDAO(object):
         #return book.raw_result
     
 DAO = BookDAO()
+UserDAO = UserDAO()
 
 @ns.route('/book') # input parameter
 class BooksList(Resource):
@@ -76,14 +83,20 @@ class BooksList(Resource):
     #     """Create a new book"""
     #     return DAO.create(ns.payload), 201
 
-@ns.route('/create_new_book') # input parameter
+@ns.route('/auth/create_new_book') # input parameter
+@ns.doc(security="Bearer",parser=DAO.bearer_header_parser())
 class CreateBook(Resource):
     """Create a new book"""
     @ns.doc('create_a_book')
     @ns.expect(book)
     def post(self):
-        """Create a new book"""
-        return DAO.create(ns.payload), 201
+        """Create a new book (requires Editor or Admin authorization token)"""
+        access_token = DAO.bearer_header_parser().parse_args()['Authorization']
+        result = UserDAO.check_access_token(access_token, must_be_admin=False)
+        if isinstance(result, str):
+            return jsonify({'message': result, 'response': 200})
+        DAO.create(ns.payload), 201
+        return jsonify({'message': "new book has been successfully added", 'response': 201})
 
 @ns.route('/book/<title>') # input parameter
 @ns.param('title', 'The title of the book (str)')
@@ -96,37 +109,34 @@ class Books(Resource):
     def get(self, title): # input parameter
         """Fetch a book by its title"""
         return DAO.get(title)
-    
-    # @ns.doc('delete_a_book')
-    # def delete(self, title):
-    #     """Delete a given book by its title"""
-    #     DAO.delete(title)
-    #     return "", 204
 
-    # @ns.doc('update_a_book')
-    # @ns.expect(book, validate=False)
-    # #@ns.marshal_with(book)
-    # def put(self, title):
-    #     """Update a given book by its title"""
-    #     return DAO.update(title, ns.payload)
-
-@ns.route('/modify_book/<title>') # input parameter
+@ns.route('/auth/modify_book/<title>') # input parameter
 @ns.param('title', 'The title of the book (str)')
 @ns.response(404, 'Book not found')
+@ns.doc(security="Bearer",parser=DAO.bearer_header_parser())
 class ModifyBook(Resource):
     """Update a book, or delete a book"""
     @ns.doc('delete_a_book')
     def delete(self, title):
-        """Delete a given book by its title"""
+        """Delete a given book by its title (requires Editor or Admin authorization token)"""
+        access_token = DAO.bearer_header_parser().parse_args()['Authorization']
+        result = UserDAO.check_access_token(access_token, must_be_admin=False)
+        if isinstance(result, str):
+            return jsonify({'message': result, 'response': 200})
         DAO.delete(title)
-        return "", 204
+        return jsonify({'message': "book has been successfully deleted", 'response': 204})
 
     @ns.doc('update_a_book')
     @ns.expect(book, validate=False)
     #@ns.marshal_with(book)
     def put(self, title):
-        """Update a given book by its title"""
-        return DAO.update(title, ns.payload)
+        """Update a given book by its title (requires Editor or Admin authorization token)"""
+        access_token = DAO.bearer_header_parser().parse_args()['Authorization']
+        result = UserDAO.check_access_token(access_token, must_be_admin=False)
+        if isinstance(result, str):
+            return jsonify({'message': result, 'response': 200})
+        DAO.update(title, ns.payload)
+        return jsonify({'message': "book's details has been successfully updated", 'response': 200})
     
     
     
@@ -152,15 +162,15 @@ class GetBookByID(Resource):
         #print(book['borrowing_availability_status'])
         return jsonify(book)
     
-    @ns.doc('update_book_genre_by_id')
-    @ns.expect(book, validate=False)
-    #@ns.marshal_list_with(book)
-    def put(self, id): # input parameter
-        """Update genre of book with the id"""
-        #book = DAO.books.find_one({'_id': ObjectId(id)})
-        result = DAO.books.update_one({'_id': ObjectId(id)}, {'$set': {'genre': ns.payload['genre']}}, True)
-        #print(result.raw_result)
-        return result.raw_result
+    # @ns.doc('update_book_genre_by_id')
+    # @ns.expect(book, validate=False)
+    # #@ns.marshal_list_with(book)
+    # def put(self, id): # input parameter
+    #     """Update genre of book with the id"""
+    #     #book = DAO.books.find_one({'_id': ObjectId(id)})
+    #     result = DAO.books.update_one({'_id': ObjectId(id)}, {'$set': {'genre': ns.payload['genre']}}, True)
+    #     #print(result.raw_result)
+    #     return result.raw_result
 
 
 

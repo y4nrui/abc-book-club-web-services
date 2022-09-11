@@ -1,21 +1,14 @@
 #from wsgiref import validate
+from email import parser
 from http import HTTPStatus
 from flask_restx import Namespace, Resource, fields, abort
 from flask_restx.reqparse import RequestParser
 from flask_restx.inputs import email
-from flask import request, jsonify, make_response
+from flask import request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
-# import time
 import re
-import json
-from bson.objectid import ObjectId
 from datetime import datetime, timedelta
-# from .db import get_db
-# from flask import current_app, g
-# from werkzeug.local import LocalProxy
-# from flask_pymongo import PyMongo
-# from pymongo import MongoClient
 from common.db import *
 from common.config import Config
 
@@ -84,22 +77,17 @@ class UserDAO(object):
         )
         return auth_reqparser
     
+    def bearer_header_parser(self):
+        parser = ns.parser()
+        parser.add_argument(name='Authorization', location='headers', type=str)
+        return parser
+    
     def get_token_expire_time(self):
         token_age_m = config.token_expire_minutes
         expires_in_seconds = token_age_m * 60
         return expires_in_seconds
 
     def create_auth_successful_response(self, token, status_code, message):
-        # response = jsonify(
-        #     status="success",
-        #     message=message,
-        #     access_token=token,
-        #     token_type="bearer",
-        #     expires_in=self.get_token_expire_time(),
-        # )
-        # response.status_code = status_code
-        # response.headers["Cache-Control"] = "no-store"
-        # response.headers["Pragma"] = "no-cache"
         response = {
             'status':'success',
             'message': message,
@@ -122,18 +110,28 @@ class UserDAO(object):
             status_code=HTTPStatus.OK,
             message="successfully logged in",
         )
+    
+    def check_access_token(self, access_token, must_be_admin=False):
+        result = self.decode_access_token(access_token)
+        if isinstance(result, str):
+            return result
+        if must_be_admin == True and result['user_role'] == "Editor":
+            return "You are unauthorized to call this endpoint"
+        
+        return result
             
     def get(self, email):
         user = self.users.find_one({"email": re.compile(email, re.IGNORECASE)})
+        user.pop('password', None) # prevent hashed password from being exposed
         return jsonify(user)
         ns.abort(404, "User {} doesn't exist".format(id))
         
-    def get_all_same_role(self, role):
-        user = self.users.find({"role": re.compile(role, re.IGNORECASE)})
-        result = list(user)
-        res = {'result': result, 'response': "200"}
-        return jsonify(res)
-        ns.abort(404, "User {} doesn't exist".format(id))
+    # def get_all_same_role(self, role):
+    #     user = self.users.find({"role": re.compile(role, re.IGNORECASE)})
+    #     result = list(user)
+    #     res = {'result': result, 'response': "200"}
+    #     return jsonify(res)
+    #     ns.abort(404, "User {} doesn't exist".format(id))
                 
         
     def users_change_maker_checker(self, target_email): 
@@ -151,7 +149,7 @@ class UserDAO(object):
         user.pop('_id', None)
         current_datetime = datetime.now().isoformat()
         user['date_joined'] = current_datetime # current local datetime in iso format
-        user['password'] = generate_password_hash(user['password']) # hash password
+        user['password'] = generate_password_hash(user['password']) # hash password before inserting into mongodb
         self.users.insert_one(user)
 
     def update(self, email, data): # TODO: add maker-checker
@@ -176,16 +174,9 @@ class UsersList(Resource):
     @ns.doc('get_all_users')
     def get(self):  # input parameter
         """Get all users"""
-        result = list((DAO.users.find()))
+        result = list((DAO.users.find({}, {"password":0}))) # password field won't be included in result
         res = {'result': result, 'response': "200"}
         return jsonify(res)
-
-    # @ns.doc('create_a_user')
-    # @ns.expect(user, validate=False)
-    # def post(self):
-    #     """Create a new user"""
-    #     print(ns.payload)
-    #     return DAO.create(ns.payload), 201
     
 @ns.route('/auth/login') # input parameter
 class AuthLogin(Resource):
@@ -194,7 +185,7 @@ class AuthLogin(Resource):
     @ns.doc('auth_login')
     @ns.expect(DAO.auth_login_reqparser())
     def post(self):  # input parameter
-        """Get Login Token"""
+        """Get Login Token (for Editor and Admin authorization token)"""
         req = DAO.auth_login_reqparser().parse_args()
         print(req)
         email = req.get('email')
@@ -204,59 +195,63 @@ class AuthLogin(Resource):
         return res
     
 @ns.route('/auth/create_new_user') # input parameter
+@ns.doc(security="Bearer",parser=DAO.bearer_header_parser())
 class CreateUser(Resource):
     """Create a new user via HTTP POST"""
     @ns.doc('create_a_user')
     @ns.expect(user, validate=False)
     def post(self):
-        """Create a new user"""
-        print(ns.payload)
-        return DAO.create(ns.payload), 201
+        """Create a new user (requires Admin authorization token)"""
+        access_token = DAO.bearer_header_parser().parse_args()['Authorization']
+        result = DAO.check_access_token(access_token, must_be_admin=True)
+        if isinstance(result, str):
+            return jsonify({'message': result, 'response': 200})
+        DAO.create(ns.payload)
+        return jsonify({'message': "new user has been successfully created", 'response': 201})
 
 @ns.route('/auth/modify_user/<email>') # input parameter
 @ns.param('email', 'The email of the user (str)')
 @ns.response(404, 'User not found')
+@ns.doc(security="Bearer",parser=DAO.bearer_header_parser())
 class ModifyUser(Resource):
     @ns.doc('delete_a_user')
     def delete(self, email):
-        """Delete a given user by its email"""
+        """Delete a given user by its email (requires Admin authorization token)"""
+        access_token = DAO.bearer_header_parser().parse_args()['Authorization']
+        result = DAO.check_access_token(access_token, must_be_admin=True)
+        if isinstance(result, str):
+            return jsonify({'message': result, 'response': 200})
         DAO.delete(email)
-        return "", 204
+        return jsonify({'message': "user has been successfully deleted", 'response': 204})
 
     @ns.doc('update_a_user')
     @ns.expect(user, validate=False)
     def put(self, email):
-        """Update a given user by its email"""
-        return DAO.update(email, ns.payload)
+        """Update a given user's details by its email (requires Admin authorization token)"""
+        access_token = DAO.bearer_header_parser().parse_args()['Authorization']
+        result = DAO.check_access_token(access_token, must_be_admin=True)
+        if isinstance(result, str):
+            return jsonify({'message': result, 'response': 200})
+        DAO.update(email, ns.payload)
+        return jsonify({'message': "user details has been successfully updated", 'response': 200})
+        
 
 @ns.route('/user/<email>') # input parameter
 @ns.param('email', 'The email of the user (str)')
 @ns.response(404, 'User not found')
 class Users(Resource):
-    # """Fetch a single user, update a user, or delete a user based on their email"""
     """Fetch a single user"""
     @ns.doc('get_a_user')
     def get(self, email): # input parameter
         """Fetch a user by email"""
         return DAO.get(email)
     
-    # @ns.doc('delete_a_user')
-    # def delete(self, email):
-    #     """Delete a given user by its email"""
-    #     DAO.delete(email)
-    #     return "", 204
-
-    # @ns.doc('update_a_user')
-    # @ns.expect(user, validate=False)
-    # def put(self, email):
-    #     """Update a given user by its email"""
-    #     return DAO.update(email, ns.payload)
     
-@ns.route('/get_users_of_same_role/<role>') # input parameter
-@ns.param('role', 'The role of the user (str)')
-@ns.response(404, 'User not found')
-class ManyUsers(Resource):
-    @ns.doc('get_all_user_of_the_same_role')
-    def get(self, role): # input parameter
-        """Fetch all users that have the same role"""
-        return DAO.get_all_same_role(role)
+# @ns.route('/get_users_of_same_role/<role>') # input parameter
+# @ns.param('role', 'The role of the user (str)')
+# @ns.response(404, 'User not found')
+# class ManyUsers(Resource):
+#     @ns.doc('get_all_user_of_the_same_role')
+#     def get(self, role): # input parameter
+#         """Fetch all users that have the same role"""
+#         return DAO.get_all_same_role(role)
