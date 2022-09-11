@@ -24,6 +24,6 @@ if __name__ == '__main__':
     app = create_app(config)
     port = config.port
     if port is None:
-        app.run(host='0.0.0.0', port=5010, debug=True)
+        app.run(host='0.0.0.0', port=5010, debug=False)
     else:
-        app.run(host='0.0.0.0', port=int(port), debug=True)
+        app.run(host='0.0.0.0', port=int(port), debug=False)
