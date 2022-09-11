@@ -1,68 +1,83 @@
-[{
-  "_id": {
-    "$oid": "631d1463f4d891799729ca0c"
+[
+  {
+    "_id": {
+      "$oid": "631d1463f4d891799729ca0c"
+    },
+    "email": "jayden_sia@gmail.com",
+    "name": "Jayden Sia",
+    "role": "Admin",
+    "date_joined": "2022-09-11T06:49:07.892432",
+    "books_on_borrow": [],
+    "password": "pbkdf2:sha256:150000$1AzAY2lE$182aafa58e4cc78f29ac85236314b671c23e9fe6ee31651bd47c35fb798711d1"
   },
-  "email": "jayden_sia@gmail.com",
-  "name": "Jayden Sia",
-  "role": "Admin",
-  "date_joined": "2022-09-11T06:49:07.892432",
-  "books_on_borrow": []
-},{
-  "_id": {
-    "$oid": "631d14b6f4d891799729ca0d"
+  {
+    "_id": {
+      "$oid": "631d14b6f4d891799729ca0d"
+    },
+    "email": "john_tan@gmail.com",
+    "name": "John Tan",
+    "role": "Admin",
+    "date_joined": "2022-09-11T06:50:30.866827",
+    "books_on_borrow": [],
+    "password": "pbkdf2:sha256:150000$G1EI703A$19565286e77bd402503adcecd234f1ca6319042414acc416f6791e9d85e123fc"
   },
-  "email": "john_tan@gmail.com",
-  "name": "John Tan",
-  "role": "Admin",
-  "date_joined": "2022-09-11T06:50:30.866827",
-  "books_on_borrow": []
-},{
-  "_id": {
-    "$oid": "631d151cf4d891799729ca0e"
+  {
+    "_id": {
+      "$oid": "631d151cf4d891799729ca0e"
+    },
+    "email": "edward_lim@gmail.com",
+    "name": "Edward Lim",
+    "role": "Member",
+    "date_joined": "2022-09-11T06:52:12.706850",
+    "books_on_borrow": [
+      "631d10d1c958014e790bb928"
+    ],
+    "password": "pbkdf2:sha256:150000$uKp8BVkv$de2fe0f3057f880f03849439904846718145e204142e99128109904f33a6e30d"
   },
-  "email": "edward_lim@gmail.com",
-  "name": "Edward Lim",
-  "role": "Member",
-  "date_joined": "2022-09-11T06:52:12.706850",
-  "books_on_borrow": [
-    "631d10d1c958014e790bb928"
-  ]
-},{
-  "_id": {
-    "$oid": "631d1570f4d891799729ca0f"
+  {
+    "_id": {
+      "$oid": "631d1570f4d891799729ca0f"
+    },
+    "email": "jane_kan@gmail.com",
+    "name": "Jane Kan",
+    "role": "Editor",
+    "date_joined": "2022-09-11T06:53:36.017457",
+    "books_on_borrow": [],
+    "password": "pbkdf2:sha256:150000$LOuFObGm$c3d01af65f14c2808f8ee8461bdbf9f2897d06ada5ceafde1041d701f3276e4d"
   },
-  "email": "jane_kan@gmail.com",
-  "name": "Jane Kan",
-  "role": "Editor",
-  "date_joined": "2022-09-11T06:53:36.017457",
-  "books_on_borrow": []
-},{
-  "_id": {
-    "$oid": "631d1584f4d891799729ca10"
+  {
+    "_id": {
+      "$oid": "631d1584f4d891799729ca10"
+    },
+    "email": "grace_teo@gmail.com",
+    "name": "Grace Teo",
+    "role": "Editor",
+    "date_joined": "2022-09-11T06:53:56.515845",
+    "books_on_borrow": [],
+    "password": "pbkdf2:sha256:150000$ikOTu38r$be1c5ed995ddd2f0b6dd7b187da50537894b7b18499ffb8f63fe111716505427"
   },
-  "email": "grace_teo@gmail.com",
-  "name": "Grace Teo",
-  "role": "Editor",
-  "date_joined": "2022-09-11T06:53:56.515845",
-  "books_on_borrow": []
-},{
-  "_id": {
-    "$oid": "631d1591f4d891799729ca11"
+  {
+    "_id": {
+      "$oid": "631d1591f4d891799729ca11"
+    },
+    "email": "brian_yak@gmail.com",
+    "name": "Brian Yak",
+    "role": "Member",
+    "date_joined": "2022-09-11T06:54:09.544839",
+    "books_on_borrow": [],
+    "password": "pbkdf2:sha256:150000$WS5bIW10$e2e4ae21280320ecb7741e48ba3b53259e6a5b51afa38a3525adbaf9a62a6529"
   },
-  "email": "brian_yak@gmail.com",
-  "name": "Brian Yak",
-  "role": "Member",
-  "date_joined": "2022-09-11T06:54:09.544839",
-  "books_on_borrow": []
-},{
-  "_id": {
-    "$oid": "631d15bbf4d891799729ca12"
-  },
-  "email": "ignatius_koh@gmail.com",
-  "name": "Ignatius Koh",
-  "role": "Member",
-  "date_joined": "2022-09-11T06:54:51.493630",
-  "books_on_borrow": [
-    "631d121ac958014e790bb92c"
-  ]
-}]
+  {
+    "_id": {
+      "$oid": "631d15bbf4d891799729ca12"
+    },
+    "email": "ignatius_koh@gmail.com",
+    "name": "Ignatius Koh",
+    "role": "Member",
+    "date_joined": "2022-09-11T06:54:51.493630",
+    "books_on_borrow": [
+      "631d121ac958014e790bb92c"
+    ],
+    "password": "pbkdf2:sha256:150000$PkBzZzdL$9a90f4bf93e54eb1fec7f48067ec4322e070a8a2df33c3ef72170f5a51767552"
+  }
+]
